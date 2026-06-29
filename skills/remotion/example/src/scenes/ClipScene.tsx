@@ -5,33 +5,46 @@ import {
   interpolate,
   staticFile,
   useCurrentFrame,
-  useVideoConfig,
 } from 'remotion';
-import {edit} from '../copy';
+import {brandColor} from '../copy';
 
-// Heavy outline + bottom scrim keep text legible over bright video on silent
-// mobile feeds. Outline ≈ 6% of glyph size.
+export type ClipSceneProps = {
+  src: string;
+  title?: string;
+  caption?: string;
+  trimStart?: number;
+  /** Length of this clip's slot, in frames — drives the caption fade-out. */
+  clipDuration: number;
+  muted?: boolean;
+};
+
+// Heavy outline keeps text legible over bright video on silent mobile feeds.
+// Outline ≈ 6% of glyph size.
 const outline = (fontSize: number): React.CSSProperties => ({
   WebkitTextStroke: `${fontSize * 0.06}px #000`,
   paintOrder: 'stroke fill',
 });
 
-export const ClipScene: React.FC = () => {
+export const ClipScene: React.FC<ClipSceneProps> = ({
+  src,
+  title,
+  caption,
+  trimStart = 0,
+  clipDuration,
+  muted = true,
+}) => {
   const frame = useCurrentFrame();
-  const {durationInFrames} = useVideoConfig();
 
   // Title: fade in 5→20, hold, fade out 60→80.
-  const titleOpacity = interpolate(
-    frame,
-    [5, 20, 60, 80],
-    [0, 1, 1, 0],
-    {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'},
-  );
+  const titleOpacity = interpolate(frame, [5, 20, 60, 80], [0, 1, 1, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
 
-  // Caption: fade in 5→22 with a small rise; fade out near the end.
+  // Caption: fade in 5→22 with a small rise; fade out near the slot's end.
   const captionOpacity = interpolate(
     frame,
-    [5, 22, durationInFrames - 20, durationInFrames - 6],
+    [5, 22, clipDuration - 20, clipDuration - 6],
     [0, 1, 1, 0],
     {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'},
   );
@@ -43,25 +56,24 @@ export const ClipScene: React.FC = () => {
   return (
     <AbsoluteFill style={{backgroundColor: '#000'}}>
       <OffthreadVideo
-        src={staticFile('clip.mp4')}
-        // Trim the FRONT of the clip; the slot length handles the tail.
-        trimBefore={edit.trimStart}
-        muted={!edit.keepClipAudio}
+        src={staticFile(src)}
+        trimBefore={trimStart} // trims the FRONT; the slot length handles the tail
+        muted={muted}
         style={{width: '100%', height: '100%', objectFit: 'cover'}}
       />
 
       {/* Bottom scrim for caption legibility */}
-      {edit.caption.show && (
+      {caption ? (
         <AbsoluteFill
           style={{
             background:
               'linear-gradient(to top, rgba(0,0,0,0.66) 0%, rgba(0,0,0,0) 38%)',
           }}
         />
-      )}
+      ) : null}
 
       {/* Title card (top) */}
-      {edit.title.show && (
+      {title ? (
         <AbsoluteFill
           style={{
             justifyContent: 'flex-start',
@@ -76,18 +88,18 @@ export const ClipScene: React.FC = () => {
               fontWeight: 800,
               fontSize: 96,
               letterSpacing: 2,
-              color: edit.brandColor,
+              color: brandColor,
               textTransform: 'uppercase',
               ...outline(96),
             }}
           >
-            {edit.title.text}
+            {title}
           </div>
         </AbsoluteFill>
-      )}
+      ) : null}
 
       {/* Caption / lower-third (bottom) */}
-      {edit.caption.show && (
+      {caption ? (
         <AbsoluteFill
           style={{
             justifyContent: 'flex-end',
@@ -110,10 +122,10 @@ export const ClipScene: React.FC = () => {
               ...outline(64),
             }}
           >
-            {edit.caption.text}
+            {caption}
           </div>
         </AbsoluteFill>
-      )}
+      ) : null}
     </AbsoluteFill>
   );
 };

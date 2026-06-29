@@ -12,9 +12,44 @@ Remotion Studio, then render to MP4. This skill captures a **proven pipeline for
 editing native AI clips** (Higgsfield / Veo-style 6-second renders) into a
 captioned, branded vertical promo — and the failure modes that cost the most time.
 
-A runnable example lives in [`example/`](./example/): it loads one real 1080×1920
-Higgsfield clip and overlays an editable title + caption you can scrub and re-time
-in the Studio. Start there.
+A runnable example lives in [`example/`](./example/) with two compositions:
+`EditableClip` (title + caption + trim on one clip) and `MultiClip` (several clips
+chained with cross-dissolves + an optional voiceover track). Start there.
+
+## What Remotion is — and isn't — for
+
+Remotion is the **editing room**: it arranges clips in time and stacks overlays on
+top (text, captions, audio, fades). It **cannot change what is inside the frame** —
+it can't make a mouth move, repaint night→day, or change an outfit. That work
+happens on the **film set**: AI video generation (Higgsfield, Runway, Kling, Veo).
+Know which department a task belongs to before you start:
+
+| Task | Tool | Cost |
+|---|---|---|
+| Chain clips, fades, titles, captions, sync audio | **Remotion** (this skill) | free |
+| Create the spoken voice for a voiceover | **ElevenLabs** (text-to-speech) → Remotion syncs it | TTS credits |
+| Make a character's mouth move to speech (lip-sync) | **Higgsfield / Runway Act / Hedra** + ElevenLabs voice | generation credits |
+| Change background (night→day), outfits, props | **Higgsfield / Runway / Kling** (video-to-video) | generation credits |
+
+### Dialogue between characters (making them "talk")
+
+Two separate steps, then assemble:
+1. **Voice** — generate each character's lines as audio (ElevenLabs; the ZB cut used
+   Liam/Brian voices, `eleven_multilingual_v2`, `mp3_44100_128`). Distinct voices per
+   character if the performance matters.
+2. **Mouths** — drive lip-sync on the clip with a generation tool (Higgsfield
+   animation / Runway Act / Hedra). Non-human, side-profile characters lip-sync
+   poorly; expect retries, and frame the shot so mouths are visible.
+3. **Assemble** — bring the lip-synced clips + voice audio into Remotion, place
+   captions, and render. Marry the final mix in ffmpeg.
+
+### Changing the scene (night→day, outfits)
+
+This is **video-to-video** generation, not an edit: feed the clip to a generation
+tool with a change prompt ("same shot, change night to a bright sunny morning, keep
+characters and camera identical"). It re-renders every frame, so identity/continuity
+can drift — verify against the original (see QC below) and seed from the source frame
+where possible.
 
 ## When to use Remotion vs. regenerate
 

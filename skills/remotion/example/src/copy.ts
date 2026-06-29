@@ -7,28 +7,44 @@
 export const CLIP_FRAMES = 145;
 export const FPS = 24;
 
+// Cross-fade length between chained clips, in frames (~0.5s at 24fps).
+export const DISSOLVE = 12;
+
+// Brand color (ZeroBugs primary green, sampled from logo).
+export const brandColor = '#01A66D';
+
+// ─────────────────────────────────────────────────────────────────────────
+// SINGLE-CLIP EDITOR  →  composition "EditableClip"
+// Put text on one clip and trim it.
+// ─────────────────────────────────────────────────────────────────────────
 export const edit = {
-  // --- Trim (in frames @24fps) ---
-  // Frames removed from the FRONT of the clip.
-  trimStart: 0,
-  // Frames removed from the TAIL (shorten the slot). 0 = play to the end.
-  trimEnd: 0,
+  src: 'clip.mp4',
 
-  // --- Keep the clip's own generated audio? (ignored when rendered with --muted) ---
-  keepClipAudio: true,
+  // Trim (in frames @24fps)
+  trimStart: 0, // frames removed from the FRONT
+  trimEnd: 0, // frames removed from the TAIL (0 = play to the end)
 
-  // --- Title card (top), fades in then out near the start ---
-  title: {
-    text: 'NIGHT PATROL',
-    show: true,
-  },
+  keepClipAudio: true, // ignored when rendered with --muted
 
-  // --- Caption / lower-third (bottom), held over the action ---
-  caption: {
-    text: 'The detective and his partner work the night shift.',
-    show: true,
-  },
+  title: {text: 'NIGHT PATROL', show: true},
+  caption: {text: 'The detective and his partner work the night shift.', show: true},
+} as const;
 
-  // --- Brand ---
-  brandColor: '#01A66D', // ZeroBugs primary green (sampled from logo)
+// ─────────────────────────────────────────────────────────────────────────
+// MULTI-CLIP SEQUENCE  →  composition "MultiClip"
+// Several clips played back-to-back with a smooth fade between each.
+// (Here we reuse the one clip 3x as stand-ins — swap in real clips later.)
+// ─────────────────────────────────────────────────────────────────────────
+export const clips = [
+  {src: 'clip.mp4', title: 'NIGHT PATROL', caption: 'The detective works the night shift.', trimStart: 0, trimEnd: 0},
+  {src: 'clip.mp4', title: '', caption: 'His partner spots something move.', trimStart: 0, trimEnd: 0},
+  {src: 'clip.mp4', title: '', caption: 'Case closed. Pest evicted.', trimStart: 0, trimEnd: 0},
+] as const;
+
+// Voiceover audio laid over the whole sequence.
+// To use it: create the audio (e.g. with ElevenLabs), drop the mp3 at
+// public/voiceover.mp3, then set enabled: true. Render WITHOUT --muted to hear it.
+export const voiceover = {
+  enabled: false,
+  src: 'voiceover.mp3',
 } as const;
