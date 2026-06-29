@@ -37,11 +37,23 @@ Two separate steps, then assemble:
 1. **Voice** — generate each character's lines as audio (ElevenLabs; the ZB cut used
    Liam/Brian voices, `eleven_multilingual_v2`, `mp3_44100_128`). Distinct voices per
    character if the performance matters.
-2. **Mouths** — drive lip-sync on the clip with a generation tool (Higgsfield
-   animation / Runway Act / Hedra). Non-human, side-profile characters lip-sync
-   poorly; expect retries, and frame the shot so mouths are visible.
-3. **Assemble** — bring the lip-synced clips + voice audio into Remotion, place
+2. **Mouths** — drive lip-sync with a generation tool (Higgsfield Seedance/Wan,
+   Runway Act, Hedra).
+3. **Assemble** — bring the talking clips + voice audio into Remotion, place
    captions, and render. Marry the final mix in ffmpeg.
+
+**Lip-sync, learned the hard way (verified on this cast):**
+- **Feed it a face, not an action shot.** A clean *front-facing portrait* lip-syncs
+  well — even a cartoon animal. A side/back-profile running clip (the escape scene)
+  cannot be lip-synced; the mouth isn't visible. Generate the portrait from a locked
+  character **Element** first so identity holds, then animate that.
+- **Two ways to voice it.** (a) Let the video model **generate native speech** from
+  the line in the prompt (`generate_audio: true`) — reliable. (b) Attach a
+  **pre-made** voice as an audio reference to sync to an exact take — more control,
+  but the audio must be a real uploaded **audio media**; a raw text-to-speech job id
+  is rejected, so upload/import the mp3 to a media id first (needs network access to
+  the generation host).
+- Expect failed renders; retry, and keep the shot tight on the face.
 
 ### Changing the scene (night→day, outfits)
 
