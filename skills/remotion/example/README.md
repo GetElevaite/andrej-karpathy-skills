@@ -7,6 +7,8 @@ Higgsfield clip (`public/clip.mp4`). It ships **two compositions**:
 - **`MultiClip`** — several clips played back-to-back with a smooth **cross-dissolve**
   between each, plus an optional **voiceover** track. (The demo reuses the one clip
   3× as stand-ins; swap in real clips later.)
+- **`DialogueClip`** — two characters "talking": each line gets a **color-coded,
+  speaker-labeled caption** timed over the clip, plus its own **voice** audio.
 
 This is the runnable companion to the [`remotion` skill](../SKILL.md).
 
@@ -59,6 +61,22 @@ Remotion doesn't *create* the voice — it lines it up with the picture. So:
 3. Set `voiceover.enabled: true` in `src/copy.ts`.
 4. Render the `MultiClip` composition **without** `--muted` so the audio is included.
 
+## Make the characters talk (different voices)
+
+The `DialogueClip` composition gives each character a distinct voice + a
+color-coded caption. The captions render on their own; the voices drop in:
+
+1. Generate **one mp3 per line**, a distinct voice per character (Higgsfield
+   `text2speech`, ElevenLabs, etc.).
+2. Save them in `public/` under the `voiceFile` names in `dialogue.lines`
+   (`boss1.mp3`, `squeak1.mp3`).
+3. Set `dialogue.enabled: true` in `src/copy.ts`; tune each line's `startSec`,
+   `text`, `speaker`, and the per-speaker `color` in `speakers`.
+4. Render `DialogueClip` **without** `--muted`.
+
+Note: this makes them *speak with captions*. It does **not** move their mouths —
+lip-sync is a separate AI-generation step (see the [skill](../SKILL.md)).
+
 ## Render to MP4
 
 ```bash
@@ -76,6 +94,7 @@ voiceover) in the render instead, drop `--muted`.
 public/clip.mp4          the native AI clip (145f @24fps, 1080x1920)
 src/copy.ts              single source of truth for text / trim / clips / voiceover
 src/scenes/ClipScene.tsx one clip + title + caption overlays (prop-driven)
+src/scenes/DialogueScene.tsx  two characters talking: voices + speaker captions
 src/Sequencer.tsx        chains clips with cross-dissolves + optional voiceover
 src/Root.tsx             registers both compositions, derives durations
 src/index.ts             entry point

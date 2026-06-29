@@ -1,6 +1,7 @@
 import React from 'react';
 import {Composition} from 'remotion';
 import {ClipScene} from './scenes/ClipScene';
+import {DialogueScene} from './scenes/DialogueScene';
 import {Sequencer, TIMELINE} from './Sequencer';
 import {CLIP_FRAMES, FPS, edit} from './copy';
 
@@ -33,6 +34,16 @@ export const RemotionRoot: React.FC = () => {
         id="MultiClip"
         component={Sequencer}
         durationInFrames={TIMELINE.total}
+        fps={FPS}
+        width={1080}
+        height={1920}
+      />
+
+      {/* Two characters "talking": color-coded captions + per-line voices. */}
+      <Composition
+        id="DialogueClip"
+        component={DialogueScene}
+        durationInFrames={CLIP_FRAMES}
         fps={FPS}
         width={1080}
         height={1920}

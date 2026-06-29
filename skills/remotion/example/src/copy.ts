@@ -48,3 +48,28 @@ export const voiceover = {
   enabled: false,
   src: 'voiceover.mp3',
 } as const;
+
+// ─────────────────────────────────────────────────────────────────────────
+// CHARACTER DIALOGUE  →  composition "DialogueClip"
+// Two animals "talking" — each line gets its own voice + a color-coded,
+// speaker-labeled caption timed over the clip.
+//
+// Remotion places and captions the dialogue; it does NOT create the voices,
+// and it cannot make the mouths move (that's AI lip-sync — see SKILL.md).
+//
+// To make it speak: generate one mp3 per line (e.g. Higgsfield text2speech /
+// ElevenLabs — distinct voice per character), save them in public/ under the
+// `voiceFile` names below, then set enabled: true and render WITHOUT --muted.
+// ─────────────────────────────────────────────────────────────────────────
+export const speakers = {
+  BOSS: {label: 'BOSS', color: '#01A66D'}, // squirrel detective
+  SQUEAK: {label: 'SQUEAK', color: '#5ab9ff'}, // mouse partner
+} as const;
+
+export const dialogue = {
+  enabled: false, // true once the mp3s are in public/
+  lines: [
+    {speaker: 'BOSS', text: "Stay sharp, partner. Something's moving by the fence.", voiceFile: 'boss1.mp3', startSec: 0.2},
+    {speaker: 'SQUEAK', text: "I see it, Boss — eight legs, and it's fast!", voiceFile: 'squeak1.mp3', startSec: 3.3},
+  ],
+} as const;
